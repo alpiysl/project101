@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  This is task template
+  
+Resources:
+  Osman: 
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-06878d265978313ca
+      InstanceType: t2.miro
+      KeyName: mac16
+      SecurityGroups:
+        - !Ref WebSecProject
+      Tags:
+        - Key: Name
+          Value: CFN-Instance
+        - Key: Environment
+          Value: Dev
+        UserData: 
+          Fn::Base64: 
+             !Sub | 
+            #! /bin/bash
+            apt update -y
+            apt install -y httpd
+            systemctl start httpd
+            chmod 777 /var/www/html
+      
+  WebSecProject:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: enable SSH
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
